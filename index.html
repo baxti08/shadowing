@@ -51,9 +51,6 @@ svg{display:block}
 .btn.ghost{background:rgba(195,206,255,.07);box-shadow:inset 0 0 0 1px var(--line)}
 
 /* ---------- home ---------- */
-.intro h1{font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.02em}
-.intro p{margin-top:8px;color:var(--muted);font-size:14.5px}
-.intro .g{background:linear-gradient(90deg,#C3CEFF,#7F98FF);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 .prog{display:flex;align-items:center;gap:16px;padding:16px;border-radius:24px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);text-align:left;transition:transform .15s var(--ease)}
 .prog:active{transform:scale(.985)}
@@ -108,10 +105,9 @@ svg{display:block}
 .phase{display:flex;align-items:center;justify-content:center;gap:8px;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .phase i{width:7px;height:7px;border-radius:50%;background:currentColor}
 .focus.listen .phase{color:var(--b1)} .focus.say .phase{color:var(--good)} .focus.rec .phase{color:var(--bad)}
-.focus.rec .phase i{animation:blink 1s infinite}
+.focus.rec .phase i,.focus.say.recording .phase i{animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.25}}
-.sent{font-size:21px;line-height:1.4;font-weight:600;letter-spacing:-.005em;cursor:pointer;transition:filter .3s,opacity .3s}
-.sent.hide{filter:blur(9px);opacity:.6;user-select:none}
+.sent{font-size:21px;line-height:1.4;font-weight:600;letter-spacing:-.005em;cursor:pointer}
 .meter{height:4px;border-radius:2px;background:rgba(195,206,255,.08);overflow:hidden}
 .meter i{display:block;height:100%;width:0;border-radius:2px;background:var(--b1)}
 .focus.say .meter i{background:var(--good)} .focus.rec .meter i{background:var(--bad)}
@@ -120,27 +116,23 @@ svg{display:block}
 .chip svg{width:12px;height:12px}
 .chip.you{background:rgba(52,211,153,.12);box-shadow:inset 0 0 0 1px rgba(52,211,153,.3);color:#9FEBCB}
 
-.ctrl{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.ctrl{display:flex;align-items:center;justify-content:center;gap:16px}
 .cb{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:var(--tint);background:rgba(195,206,255,.05);box-shadow:inset 0 0 0 1px var(--line);transition:transform .15s var(--ease),background .2s,color .2s}
 .cb:active{transform:scale(.94)}
 .cb svg{width:22px;height:22px}
-.cb[aria-pressed="true"]{background:rgba(85,119,255,.2);box-shadow:inset 0 0 0 1.5px rgba(85,119,255,.6);color:#fff}
-.cb.mic.on{background:var(--bad);box-shadow:0 10px 26px -10px rgba(255,90,114,.9);color:#fff}
 .main{width:76px;height:76px;border-radius:26px;display:grid;place-items:center;background:var(--grad);color:#fff;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 16px 36px -14px rgba(61,92,245,.95);transition:transform .15s var(--ease)}
 .main:active{transform:scale(.95)}
 .main svg{width:30px;height:30px}
 .hint{text-align:center;font-size:12.5px;color:var(--muted);margin-top:-8px}
 
-.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 .lst{display:flex;flex-direction:column;gap:2px}
-.li{display:grid;grid-template-columns:26px 1fr 22px;gap:10px;align-items:start;padding:11px 12px;border-radius:14px;text-align:left;transition:background .2s}
+.li{display:grid;grid-template-columns:26px 1fr 26px;gap:10px;align-items:start;padding:11px 12px;border-radius:14px;text-align:left;transition:background .2s}
 .li .k{font-size:12px;color:var(--muted);font-weight:600;padding-top:2px;font-variant-numeric:tabular-nums}
-.li .x{font-size:14px;line-height:1.45;color:#C9D2F5;transition:filter .3s}
-.li .x.hide{filter:blur(6px)}
-.li .y{width:22px;height:22px;border-radius:50%;background:rgba(52,211,153,.14);display:grid;place-items:center;margin-top:1px}
-.li .y svg{width:11px;height:11px;color:var(--good)}
+.li .x{font-size:14px;line-height:1.45;color:#C9D2F5}
+.li .y{width:26px;height:26px;border-radius:50%;background:rgba(52,211,153,.16);box-shadow:inset 0 0 0 1px rgba(52,211,153,.3);display:grid;place-items:center;margin-top:-2px}
+.li .y svg{width:10px;height:10px;color:var(--good);margin-left:1px}
 .li.cur{background:rgba(61,92,245,.16);box-shadow:inset 0 0 0 1px rgba(85,119,255,.28)}
 .li.cur .k{color:var(--tint)} .li.cur .x{color:#fff}
 
@@ -181,10 +173,6 @@ svg{display:block}
 
 <section id="home" hidden><div class="wrap screen">
   <div class="mark"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg></div>Shadowing</div>
-  <div class="intro">
-    <h1>Tinglang. <span class="g">Takrorlang.</span><br>Ravon gapiring.</h1>
-    <p>Har bir gapni xuddi asl so'zlovchidek takrorlang — ohangi, urg'usi va tezligi bilan.</p>
-  </div>
   <button class="prog" id="cont">
     <div class="ring"><svg viewBox="0 0 64 64"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="ringFg" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="169.6"/></svg><b id="ringTxt">0</b></div>
     <div class="t"><span class="lab" id="contLab">Boshlash</span><div class="nx" id="contName"></div></div>
@@ -213,18 +201,13 @@ svg{display:block}
   </div>
 
   <div class="ctrl">
-    <button class="cb" id="loopBtn" aria-pressed="false" aria-label="Takrorlash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5l3 3-3 3"/><path d="M4 11V9.5a4 4 0 0 1 4-4h12"/><path d="M7 21.5l-3-3 3-3"/><path d="M20 13v1.5a4 4 0 0 1-4 4H4"/></svg></button>
     <button class="cb" id="prevBtn" aria-label="Oldingi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5.9v12.2a.9.9 0 0 1-1.4.75L10 12.75a.9.9 0 0 1 0-1.5l8.6-6.1A.9.9 0 0 1 20 5.9z"/></svg></button>
     <button class="main" id="mainBtn" aria-label="Boshlash"><svg id="mainIco" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg></button>
     <button class="cb" id="nextBtn" aria-label="Keyingi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5.9v12.2a.9.9 0 0 0 1.4.75L14 12.75a.9.9 0 0 0 0-1.5L5.4 5.15A.9.9 0 0 0 4 5.9z"/></svg></button>
-    <button class="cb mic" id="micBtn" aria-label="Yozib olish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg></button>
   </div>
-  <p class="hint">Katta tugma — gapma-gap mashq · Mikrofon — solishtirish</p>
+  <p class="hint">Sizning navbatingizda ovozingiz avtomatik yoziladi</p>
 
-  <div class="opts">
-    <div class="seg" id="speedSeg"><button data-s="0.75" aria-pressed="false">0.75×</button><button data-s="1" aria-pressed="true">1×</button></div>
-    <div class="seg" id="textSeg"><button data-t="1" aria-pressed="true">Matn</button><button data-t="0" aria-pressed="false">Yashirin</button></div>
-  </div>
+  <div class="seg" id="speedSeg"><button data-s="0.75" aria-pressed="false">Sekin · 0.75×</button><button data-s="1" aria-pressed="true">Oddiy · 1×</button></div>
 
   <div>
     <div class="lab" style="padding:0 12px 8px">Barcha gaplar</div>
@@ -315,7 +298,7 @@ svg{display:block}
 
   // ---------- player state ----------
   const video = $("video");
-  let cur = null, idx = 0, speed = 1, loop = false, showText = true, running = false;
+  let cur = null, idx = 0, speed = 1, running = false;
   let runId = 0;              // every new action cancels the previous one
   const myRec = {};           // sentence -> your recording (this visit only)
 
@@ -341,7 +324,6 @@ svg{display:block}
   function renderFocus() {
     const s = cur.segs[idx];
     $("sent").textContent = s.t;
-    $("sent").classList.toggle("hide", !showText);
     $("pcount").textContent = `${idx + 1} / ${cur.segs.length}`;
     $("cmp").hidden = !myRec[idx];
     document.querySelectorAll(".li").forEach(r => r.classList.toggle("cur", +r.dataset.i === idx));
@@ -350,13 +332,15 @@ svg{display:block}
     $("lst").innerHTML = cur.segs.map((s, i) => `
       <button class="li ${i === idx ? "cur" : ""}" data-i="${i}">
         <span class="k">${String(i + 1).padStart(2, "0")}</span>
-        <span class="x ${showText ? "" : "hide"}">${esc(s.t)}</span>
-        ${myRec[i] ? `<span class="y"><svg viewBox="0 0 24 24">${ICO.check}</svg></span>` : "<span></span>"}
+        <span class="x">${esc(s.t)}</span>
+        ${myRec[i] ? `<span class="y" data-mine="${i}" title="Mening ovozim"><svg viewBox="0 0 24 24" fill="currentColor">${ICO.play}</svg></span>` : "<span></span>"}
       </button>`).join("");
   }
   $("lst").addEventListener("click", (e) => {
     const r = e.target.closest(".li"); if (!r) return;
+    const mine = e.target.closest("[data-mine]");
     idx = +r.dataset.i; renderFocus(); haptic();
+    if (mine) { stopAll(); const my = runId; setPhase("say", "Sizning ovozingiz"); playMine(idx, my).then(() => { if (my === runId) setPhase("", "Tayyor"); }); return; }
     window.scrollTo({ top: 0, behavior: "smooth" });
     playOne();
   });
@@ -405,35 +389,29 @@ svg{display:block}
   function stopAll() {
     runId++; video.pause(); setMain(false);
     if (recorder && recorder.state !== "inactive") { try { recorder.stop(); } catch (e) {} }
-    $("micBtn").classList.remove("on");
     if (cur) { setPhase("", "Tayyor"); setMeter(0); }
   }
 
   // one sentence (tap the sentence or a line in the list)
   async function playOne() {
     stopAll(); const my = runId;
-    do {
-      setPhase("listen", loop ? "Takrorlanmoqda" : "Tinglang");
-      if (!await playSegment(idx, my)) return;
-      if (loop) {
-        setPhase("say", "Endi siz");
-        if (!await countdown(segLen(idx) * 1250 + 900, my)) return;
-      }
-    } while (loop && my === runId);
-    if (my === runId) setPhase("", "Tayyor");
+    setPhase("listen", "Tinglang");
+    if (await playSegment(idx, my)) setPhase("", "Tayyor");
   }
 
   // main flow: listen -> repeat aloud -> next sentence
   async function practice() {
     stopAll(); const my = runId; setMain(true); haptic("medium");
+    let mic = null;
+    try { mic = typeof MediaRecorder !== "undefined" ? await getMic() : null; }
+    catch (e) { toast("Mikrofonga ruxsat berilmadi — yozmasdan davom etamiz"); }
+    if (my !== runId) return;
     for (let i = idx; i < cur.segs.length; i++) {
       idx = i; renderFocus();
       setPhase("listen", "Tinglang");
       if (!await playSegment(i, my)) return;
-      setPhase("say", "Endi siz takrorlang");
       haptic("soft");
-      if (!await countdown(segLen(i) * 1250 + 900, my)) return;
-      if (loop) { i--; continue; }
+      if (!await yourTurn(i, mic, my)) return;
     }
     if (my !== runId) return;
     stopAll(); idx = 0; renderFocus();
@@ -442,51 +420,36 @@ svg{display:block}
   $("mainBtn").onclick = () => { if (running) { stopAll(); haptic(); } else practice(); };
   $("prevBtn").onclick = () => { if (idx > 0) { idx--; renderFocus(); haptic(); playOne(); } };
   $("nextBtn").onclick = () => { if (idx < cur.segs.length - 1) { idx++; renderFocus(); haptic(); playOne(); } };
-  $("loopBtn").onclick = () => { loop = !loop; $("loopBtn").setAttribute("aria-pressed", loop); haptic(); toast(loop ? "Bitta gap takrorlanadi" : "Takrorlash o'chirildi"); };
 
-  // ---------- record yourself and compare ----------
+  // ---------- your turn: repeat aloud (recorded automatically) ----------
   let stream = null, recorder = null;
+  async function yourTurn(i, mic, my) {
+    const ms = segLen(i) * 1250 + 900;
+    if (!mic) { setPhase("say", "Endi siz takrorlang"); return countdown(ms, my); }
+    const chunks = [];
+    recorder = new MediaRecorder(mic);
+    recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data);
+    const stopped = new Promise(r => recorder.onstop = r);
+    recorder.start();
+    setPhase("say recording", "Endi siz takrorlang");
+    const ok = await countdown(ms, my);
+    if (recorder.state !== "inactive") recorder.stop();
+    await stopped;
+    if (!ok) return false;
+    if (chunks.length) {
+      if (myRec[i]) URL.revokeObjectURL(myRec[i]);
+      myRec[i] = URL.createObjectURL(new Blob(chunks, { type: chunks[0].type || "audio/mp4" }));
+      const row = document.querySelector(`.li[data-i="${i}"] span:last-child`);
+      if (row) row.outerHTML = `<span class="y" data-mine="${i}" title="Mening ovozim"><svg viewBox="0 0 24 24" fill="currentColor">${ICO.play}</svg></span>`;
+      if (i === idx) $("cmp").hidden = false;
+    }
+    return true;
+  }
   async function getMic() {
     if (stream && stream.active) return stream;
     stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     return stream;
   }
-  $("micBtn").onclick = async () => {
-    if (recorder && recorder.state === "recording") { recorder.stop(); return; }   // tap again = stop
-    stopAll(); const my = runId; const i = idx; haptic("medium");
-    let s;
-    try { s = await getMic(); }
-    catch (e) { toast("Mikrofonga ruxsat bering"); return; }
-    if (typeof MediaRecorder === "undefined") { toast("Bu telefonda ovoz yozib bo'lmaydi"); return; }
-
-    setPhase("listen", "Avval tinglang");
-    if (!await playSegment(i, my)) return;
-
-    const chunks = [];
-    recorder = new MediaRecorder(s);
-    recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data);
-    const stopped = new Promise(r => recorder.onstop = r);
-    recorder.start(); $("micBtn").classList.add("on");
-    setPhase("rec", "Yozilmoqda — gapiring");
-    const limit = Math.max(2500, segLen(i) * 1600 + 1200), t0 = performance.now();
-    while (recorder.state === "recording" && performance.now() - t0 < limit && my === runId) {
-      setMeter((performance.now() - t0) / limit); await sleep(40);
-    }
-    if (recorder.state !== "inactive") recorder.stop();
-    await stopped; $("micBtn").classList.remove("on");
-    if (my !== runId) return;
-
-    if (myRec[i]) URL.revokeObjectURL(myRec[i]);
-    myRec[i] = URL.createObjectURL(new Blob(chunks, { type: chunks[0] ? chunks[0].type : "audio/mp4" }));
-    renderList(); renderFocus();
-
-    setPhase("listen", "Asl ovoz");
-    if (!await playSegment(i, my)) return;
-    await sleep(300);
-    setPhase("say", "Sizning ovozingiz");
-    await playMine(i, my);
-    if (my === runId) setPhase("", "Solishtiring");
-  };
   function playMine(i, my) {
     return new Promise((resolve) => {
       const a = new Audio(myRec[i]);
@@ -508,13 +471,6 @@ svg{display:block}
     const b = e.target.closest("button"); if (!b) return;
     speed = +b.dataset.s; video.playbackRate = speed; haptic();
     $("speedSeg").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
-  });
-  $("textSeg").addEventListener("click", (e) => {
-    const b = e.target.closest("button"); if (!b) return;
-    showText = b.dataset.t === "1"; haptic();
-    $("textSeg").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
-    $("sent").classList.toggle("hide", !showText);
-    document.querySelectorAll(".li .x").forEach(x => x.classList.toggle("hide", !showText));
   });
 
   // ---------- finished ----------
