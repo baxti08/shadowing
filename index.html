@@ -2,150 +2,264 @@
 <html lang="uz">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Shadowing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="data.js?v=2"></script>
+<script src="data.js?v=3"></script>
 <style>
-  :root {
-    --bg: #0f1115; --card: #181b22; --card2: #20242d; --text: #eef1f6; --muted: #8d95a5;
-    --accent: #5b8cff; --accent2: #7c5bff; --green: #34c47c; --red: #ff5b6b; --line: #2a2f3a;
-    --radius: 16px;
-  }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; background: var(--bg); color: var(--text);
-    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  button { font: inherit; color: inherit; border: 0; cursor: pointer; background: none; }
-  .hidden { display: none !important; }
+/* Shadowing — same world as Word FC: night blue, one brand gradient, Poppins only.
+   Colour carries meaning: blue = listen / action, green = your turn, red = recording. */
+:root{
+  --bg:#060A1A; --card:#0C1330; --card2:#111A3D; --line:rgba(195,206,255,.09); --line2:rgba(195,206,255,.16);
+  --fg:#FFFFFF; --muted:#8490BA; --tint:#C3CEFF;
+  --b1:#5577FF; --b2:#2140D8; --brand:#3D5CF5; --grad:linear-gradient(135deg,#5577FF 0%,#2140D8 100%);
+  --good:#34D399; --bad:#FF5A72;
+  --glass:rgba(8,12,32,.66);
+  --f:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --sat:max(env(safe-area-inset-top,0px),calc(var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px)));
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:460px;background:radial-gradient(70% 100% at 50% 0%,rgba(61,92,245,.20),rgba(61,92,245,0) 72%);pointer-events:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
+h1,h2,p{margin:0}
+svg{display:block}
+.wrap{position:relative;max-width:440px;margin:0 auto;padding:calc(18px + var(--sat)) 20px 48px}
+.screen{display:flex;flex-direction:column;gap:22px;animation:fade .5s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+.lab{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.02em}
 
-  /* ---------- home ---------- */
-  #home { padding: 16px 16px 32px; }
-  .hero { padding: 6px 2px 14px; }
-  .hero h1 { margin: 0; font-size: 24px; letter-spacing: -.3px; }
-  .hero p { margin: 4px 0 0; color: var(--muted); }
-  .bar { height: 6px; background: var(--card2); border-radius: 6px; overflow: hidden; margin-top: 12px; }
-  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width .4s; }
-  .how { background: var(--card); border-radius: var(--radius); padding: 12px 14px; margin: 4px 0 16px; }
-  .how b { display: block; margin-bottom: 6px; }
-  .how ol { margin: 0; padding-left: 20px; color: var(--muted); }
-  .how li { margin: 3px 0; }
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .vcard { position: relative; background: var(--card); border-radius: var(--radius); overflow: hidden; text-align: left; padding: 0; }
-  .vcard img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; background: var(--card2); }
-  .vcard .meta { padding: 8px 10px 10px; }
-  .vcard .t { font-weight: 600; font-size: 13.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .vcard .s { color: var(--muted); font-size: 12px; margin-top: 3px; }
-  .vcard .num { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,.6); border-radius: 8px; padding: 2px 7px; font-size: 12px; font-weight: 600; }
-  .vcard .done { position: absolute; top: 8px; right: 8px; background: var(--green); border-radius: 50%; width: 24px; height: 24px; display: grid; place-items: center; font-size: 13px; }
+/* brand mark */
+.mark{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;letter-spacing:.01em}
+.tile{width:30px;height:30px;border-radius:9px;background:var(--grad);display:grid;place-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.tile svg{width:16px;height:16px;color:#fff}
 
-  /* ---------- player ---------- */
-  #player { padding-bottom: 120px; }
-  .vwrap { position: sticky; top: 0; z-index: 5; background: #000; }
-  video { display: block; width: 100%; max-height: 46vh; background: #000; }
-  .ptitle { padding: 12px 16px 2px; font-weight: 700; font-size: 17px; }
-  .tools { display: flex; gap: 8px; padding: 10px 16px; flex-wrap: wrap; }
-  .chip { background: var(--card2); border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 600; color: var(--muted); }
-  .chip.on { background: rgba(91,140,255,.18); color: var(--accent); }
-  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 16px 10px; }
-  .big { border-radius: 14px; padding: 12px; font-weight: 700; font-size: 14.5px; text-align: center; }
-  .big.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
-  .big.ghost { background: var(--card2); }
-  .status { margin: 0 16px 10px; background: var(--card); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
-  .status .ring { width: 38px; height: 38px; flex: none; }
-  .status .ring circle { fill: none; stroke-width: 4; }
-  .status .ring .bg { stroke: var(--card2); }
-  .status .ring .fg { stroke: var(--accent); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
-  .status.rec .ring .fg { stroke: var(--red); }
-  .status.say .ring .fg { stroke: var(--green); }
-  .status .st { font-weight: 700; }
-  .status .ss { color: var(--muted); font-size: 13px; }
-  .status button { margin-left: auto; background: var(--card2); border-radius: 10px; padding: 7px 11px; font-size: 13px; font-weight: 600; }
+/* buttons */
+.btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;padding:0 22px;border-radius:18px;
+  background:var(--grad);color:#fff;font-weight:600;font-size:16px;letter-spacing:.005em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 14px 34px -14px rgba(61,92,245,.85);transition:transform .15s var(--ease),opacity .2s}
+.btn:active{transform:scale(.98)}
+.btn svg{width:20px;height:20px}
+.btn.ghost{background:rgba(195,206,255,.07);box-shadow:inset 0 0 0 1px var(--line)}
 
-  .list { padding: 0 12px; }
-  .row { display: flex; gap: 10px; align-items: flex-start; background: var(--card); border-radius: 14px; padding: 10px 10px 10px 12px; margin-bottom: 8px; border: 1.5px solid transparent; }
-  .row.cur { border-color: var(--accent); background: #1b2030; }
-  .row .n { color: var(--muted); font-size: 12px; font-weight: 700; min-width: 18px; padding-top: 2px; }
-  .row .tx { flex: 1; font-size: 15px; line-height: 1.45; padding-top: 1px; }
-  .row .tx.blur { filter: blur(6px); user-select: none; }
-  .row .acts { display: flex; gap: 6px; flex: none; }
-  .ib { width: 36px; height: 36px; border-radius: 10px; background: var(--card2); display: grid; place-items: center; font-size: 16px; }
-  .ib.mine { background: rgba(52,196,124,.16); }
-  .ib.recing { background: var(--red); }
-  .finish { margin: 14px 16px 0; width: calc(100% - 32px); }
-  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2b3140; padding: 10px 16px; border-radius: 12px; font-size: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.4); z-index: 50; max-width: 90%; text-align: center; }
-  .gate { padding: 40px 24px; text-align: center; color: var(--muted); }
-  .gate b { display: block; color: var(--text); font-size: 18px; margin-bottom: 6px; }
-  #lock { padding: 48px 20px; text-align: center; }
-  #lock .ic { font-size: 54px; }
-  #lock h2 { margin: 10px 0 6px; font-size: 21px; }
-  #lock p { color: var(--muted); margin: 0 0 20px; }
-  #lock .ch { display: block; width: 100%; background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 10px; font-weight: 700; }
-  #lock .again { margin-top: 8px; width: 100%; }
-  #loading { padding: 80px 20px; text-align: center; color: var(--muted); }
+/* ---------- home ---------- */
+.intro h1{font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.02em}
+.intro p{margin-top:8px;color:var(--muted);font-size:14.5px}
+.intro .g{background:linear-gradient(90deg,#C3CEFF,#7F98FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+.prog{display:flex;align-items:center;gap:16px;padding:16px;border-radius:24px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);text-align:left;transition:transform .15s var(--ease)}
+.prog:active{transform:scale(.985)}
+.ring{position:relative;width:64px;height:64px;flex:none}
+.ring svg{width:64px;height:64px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:6}
+.ring .bg{stroke:rgba(195,206,255,.08)}
+.ring .fg{stroke:url(#rg);stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.prog .t{min-width:0;flex:1}
+.prog .t .lab{display:block}
+.prog .t .nx{font-weight:600;font-size:15px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.go{width:44px;height:44px;border-radius:14px;background:var(--grad);display:grid;place-items:center;flex:none;box-shadow:0 10px 24px -10px rgba(61,92,245,.9)}
+.go svg{width:18px;height:18px;color:#fff}
+
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:4px;background:rgba(195,206,255,.05);border-radius:14px;box-shadow:inset 0 0 0 1px var(--line)}
+.seg button{height:38px;border-radius:10px;font-weight:500;font-size:13.5px;color:var(--muted);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:rgba(195,206,255,.12);color:var(--fg)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vc{position:relative;display:block;width:100%;aspect-ratio:3/4.1;border-radius:22px;overflow:hidden;text-align:left;background:var(--card);
+  box-shadow:inset 0 0 0 1px var(--line);transition:transform .2s var(--ease)}
+.vc:active{transform:scale(.97)}
+.vc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s}
+.vc img.ok{opacity:1}
+.vc::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,10,26,0) 40%,rgba(6,10,26,.92) 100%)}
+.vc .n{position:absolute;z-index:1;top:10px;left:10px;height:24px;min-width:24px;padding:0 8px;border-radius:12px;background:var(--glass);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:11.5px;font-weight:600;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.vc .dn{position:absolute;z-index:1;top:10px;right:10px;width:24px;height:24px;border-radius:50%;background:var(--good);display:grid;place-items:center;box-shadow:0 0 0 3px rgba(6,10,26,.5)}
+.vc .dn svg{width:13px;height:13px;color:#06281B}
+.vc .m{position:absolute;z-index:1;left:12px;right:12px;bottom:11px}
+.vc .tt{display:-webkit-box;font-weight:600;font-size:13.5px;line-height:1.25;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vc .ss{display:block;font-size:11.5px;color:var(--tint);opacity:.75;margin-top:3px;font-variant-numeric:tabular-nums}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:28px 0;font-size:14px}
+
+/* ---------- player ---------- */
+#player .wrap{padding-top:calc(10px + var(--sat))}
+.stage{position:relative;border-radius:24px;overflow:hidden;background:#000;box-shadow:inset 0 0 0 1px var(--line),0 24px 50px -24px rgba(0,0,0,.9)}
+.stage video{display:block;width:100%;height:min(40vh,380px);object-fit:contain;background:#000}
+.stage .bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.08)}
+.stage .bar i{display:block;height:100%;width:0;background:var(--grad);transition:width .25s linear}
+
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.head h2{font-size:18px;font-weight:600;line-height:1.25;min-width:0}
+.head .cnt{font-size:13px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums;flex:none}
+
+.focus{position:relative;padding:22px 20px 18px;border-radius:24px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);text-align:center;min-height:168px;
+  display:flex;flex-direction:column;justify-content:center;gap:14px;transition:box-shadow .3s}
+.focus.listen{box-shadow:inset 0 0 0 1.5px rgba(85,119,255,.55)}
+.focus.say{box-shadow:inset 0 0 0 1.5px rgba(52,211,153,.55)}
+.focus.rec{box-shadow:inset 0 0 0 1.5px rgba(255,90,114,.65)}
+.phase{display:flex;align-items:center;justify-content:center;gap:8px;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.phase i{width:7px;height:7px;border-radius:50%;background:currentColor}
+.focus.listen .phase{color:var(--b1)} .focus.say .phase{color:var(--good)} .focus.rec .phase{color:var(--bad)}
+.focus.rec .phase i{animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+.sent{font-size:21px;line-height:1.4;font-weight:600;letter-spacing:-.005em;cursor:pointer;transition:filter .3s,opacity .3s}
+.sent.hide{filter:blur(9px);opacity:.6;user-select:none}
+.meter{height:4px;border-radius:2px;background:rgba(195,206,255,.08);overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:2px;background:var(--b1)}
+.focus.say .meter i{background:var(--good)} .focus.rec .meter i{background:var(--bad)}
+.cmp{display:flex;justify-content:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:17px;font-size:13px;font-weight:500;background:rgba(195,206,255,.07);box-shadow:inset 0 0 0 1px var(--line);color:var(--tint)}
+.chip svg{width:12px;height:12px}
+.chip.you{background:rgba(52,211,153,.12);box-shadow:inset 0 0 0 1px rgba(52,211,153,.3);color:#9FEBCB}
+
+.ctrl{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.cb{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:var(--tint);background:rgba(195,206,255,.05);box-shadow:inset 0 0 0 1px var(--line);transition:transform .15s var(--ease),background .2s,color .2s}
+.cb:active{transform:scale(.94)}
+.cb svg{width:22px;height:22px}
+.cb[aria-pressed="true"]{background:rgba(85,119,255,.2);box-shadow:inset 0 0 0 1.5px rgba(85,119,255,.6);color:#fff}
+.cb.mic.on{background:var(--bad);box-shadow:0 10px 26px -10px rgba(255,90,114,.9);color:#fff}
+.main{width:76px;height:76px;border-radius:26px;display:grid;place-items:center;background:var(--grad);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 16px 36px -14px rgba(61,92,245,.95);transition:transform .15s var(--ease)}
+.main:active{transform:scale(.95)}
+.main svg{width:30px;height:30px}
+.hint{text-align:center;font-size:12.5px;color:var(--muted);margin-top:-8px}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.lst{display:flex;flex-direction:column;gap:2px}
+.li{display:grid;grid-template-columns:26px 1fr 22px;gap:10px;align-items:start;padding:11px 12px;border-radius:14px;text-align:left;transition:background .2s}
+.li .k{font-size:12px;color:var(--muted);font-weight:600;padding-top:2px;font-variant-numeric:tabular-nums}
+.li .x{font-size:14px;line-height:1.45;color:#C9D2F5;transition:filter .3s}
+.li .x.hide{filter:blur(6px)}
+.li .y{width:22px;height:22px;border-radius:50%;background:rgba(52,211,153,.14);display:grid;place-items:center;margin-top:1px}
+.li .y svg{width:11px;height:11px;color:var(--good)}
+.li.cur{background:rgba(61,92,245,.16);box-shadow:inset 0 0 0 1px rgba(85,119,255,.28)}
+.li.cur .k{color:var(--tint)} .li.cur .x{color:#fff}
+
+/* ---------- lock / loading ---------- */
+.center{min-height:calc(100svh - 60px);display:flex;flex-direction:column;justify-content:center;gap:22px;text-align:center}
+.badge{width:68px;height:68px;margin:0 auto;border-radius:22px;background:var(--grad);display:grid;place-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 18px 40px -16px rgba(61,92,245,.9)}
+.badge svg{width:30px;height:30px;color:#fff}
+.center h2{font-size:23px;font-weight:700;letter-spacing:-.01em}
+.center p{color:var(--muted);font-size:14.5px;margin-top:6px}
+.chs{display:flex;flex-direction:column;gap:8px}
+.ch{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);text-align:left;font-weight:600}
+.ch .av{width:36px;height:36px;border-radius:50%;background:var(--card2);display:grid;place-items:center;color:var(--tint);font-size:14px;flex:none;box-shadow:inset 0 0 0 1px var(--line2)}
+.ch span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch svg{width:16px;height:16px;color:var(--muted)}
+.spin{width:28px;height:28px;margin:0 auto;border-radius:50%;border:2.5px solid rgba(195,206,255,.14);border-top-color:var(--b1);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.toast{position:fixed;left:50%;top:calc(14px + var(--sat));transform:translateX(-50%);z-index:20;height:36px;display:flex;align-items:center;padding:0 16px;border-radius:18px;
+  background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:inset 0 0 0 1px var(--line2);font-size:13px;font-weight:500;white-space:nowrap;animation:fade .3s var(--ease)}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5577FF"/><stop offset="1" stop-color="#34D399"/></linearGradient></defs></svg>
 
-<div id="gate" class="gate hidden"><b>🎙️ Shadowing</b>Bu sahifa faqat bot orqali ochiladi.</div>
+<section id="loading"><div class="wrap"><div class="center"><div class="spin"></div></div></div></section>
 
-<div id="loading">⏳ Tekshirilmoqda…</div>
+<section id="gate" hidden><div class="wrap"><div class="center screen">
+  <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg></div>
+  <div><h2>Shadowing</h2><p>Bu sahifa faqat Telegram bot orqali ochiladi.</p></div>
+</div></div></section>
 
-<div id="lock" class="hidden">
-  <div class="ic">🔒</div>
-  <h2>Shadowing yopiq</h2>
-  <p>Ochish uchun ustozlar kanaliga a'zo bo'ling👇</p>
-  <div id="lockChannels"></div>
-  <button class="big primary again" id="recheckBtn">✅ A'zo bo'ldim</button>
-</div>
+<section id="lock" hidden><div class="wrap"><div class="center screen">
+  <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></div>
+  <div><h2>Shadowing yopiq</h2><p>Ochish uchun ustozlar kanaliga a'zo bo'ling</p></div>
+  <div class="chs" id="lockChannels"></div>
+  <button class="btn" id="recheckBtn"><span id="recheckLbl">A'zo bo'ldim</span></button>
+</div></div></section>
 
-<div id="home" class="hidden">
-  <div class="hero">
-    <h1>🎙️ Shadowing</h1>
-    <p id="progressText"></p>
-    <div class="bar"><i id="progressBar"></i></div>
+<section id="home" hidden><div class="wrap screen">
+  <div class="mark"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg></div>Shadowing</div>
+  <div class="intro">
+    <h1>Tinglang. <span class="g">Takrorlang.</span><br>Ravon gapiring.</h1>
+    <p>Har bir gapni xuddi asl so'zlovchidek takrorlang — ohangi, urg'usi va tezligi bilan.</p>
   </div>
-  <div class="how">
-    <b>Qanday mashq qilinadi?</b>
-    <ol>
-      <li>Videoni tanlang va <b style="display:inline">«Gapma-gap»</b> tugmasini bosing.</li>
-      <li>Har bir gapdan keyin video to'xtaydi — xuddi o'shanday ovoz chiqarib takrorlang.</li>
-      <li>🎙 tugmasi: ovozingizni yozib oling va asl ovoz bilan solishtiring.</li>
-    </ol>
+  <button class="prog" id="cont">
+    <div class="ring"><svg viewBox="0 0 64 64"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="ringFg" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="169.6"/></svg><b id="ringTxt">0</b></div>
+    <div class="t"><span class="lab" id="contLab">Boshlash</span><div class="nx" id="contName"></div></div>
+    <div class="go"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg></div>
+  </button>
+  <div class="seg" id="filter">
+    <button aria-pressed="true" data-f="all">Hammasi</button>
+    <button aria-pressed="false" data-f="left">Qolgan</button>
+    <button aria-pressed="false" data-f="done">Tugatilgan</button>
   </div>
   <div class="grid" id="grid"></div>
-</div>
+</div></section>
 
-<div id="player" class="hidden">
-  <div class="vwrap"><video id="video" playsinline webkit-playsinline preload="auto"></video></div>
-  <div class="ptitle" id="ptitle"></div>
-  <div class="tools">
-    <button class="chip" id="speedBtn">🐢 0.75x</button>
-    <button class="chip" id="loopBtn">🔁 Bitta gapni takrorlash</button>
-    <button class="chip" id="textBtn">🙈 Matnni yashirish</button>
+<section id="player" hidden><div class="wrap screen">
+  <div class="stage"><video id="video" playsinline webkit-playsinline preload="auto"></video><div class="bar"><i id="vbar"></i></div></div>
+  <div class="head"><h2 id="ptitle"></h2><span class="cnt" id="pcount"></span></div>
+
+  <div class="focus" id="focus">
+    <div class="phase"><i></i><span id="phaseTxt">Tayyor</span></div>
+    <div class="sent" id="sent"></div>
+    <div class="meter"><i id="meter"></i></div>
+    <div class="cmp" id="cmp" hidden>
+      <button class="chip" id="cmpOrig"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg>Asl ovoz</button>
+      <button class="chip you" id="cmpYou"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg>Mening ovozim</button>
+    </div>
   </div>
-  <div class="modes">
-    <button class="big primary" id="practiceBtn">▶️ Gapma-gap</button>
-    <button class="big ghost" id="wholeBtn">🎬 To'liq ko'rish</button>
+
+  <div class="ctrl">
+    <button class="cb" id="loopBtn" aria-pressed="false" aria-label="Takrorlash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5l3 3-3 3"/><path d="M4 11V9.5a4 4 0 0 1 4-4h12"/><path d="M7 21.5l-3-3 3-3"/><path d="M20 13v1.5a4 4 0 0 1-4 4H4"/></svg></button>
+    <button class="cb" id="prevBtn" aria-label="Oldingi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5.9v12.2a.9.9 0 0 1-1.4.75L10 12.75a.9.9 0 0 1 0-1.5l8.6-6.1A.9.9 0 0 1 20 5.9z"/></svg></button>
+    <button class="main" id="mainBtn" aria-label="Boshlash"><svg id="mainIco" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg></button>
+    <button class="cb" id="nextBtn" aria-label="Keyingi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5.9v12.2a.9.9 0 0 0 1.4.75L14 12.75a.9.9 0 0 0 0-1.5L5.4 5.15A.9.9 0 0 0 4 5.9z"/></svg></button>
+    <button class="cb mic" id="micBtn" aria-label="Yozib olish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg></button>
   </div>
-  <div class="status hidden" id="status">
-    <svg class="ring" viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="17"/><circle class="fg" id="ringFg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/></svg>
-    <div><div class="st" id="stTitle"></div><div class="ss" id="stSub"></div></div>
-    <button id="stopBtn">⏹ To'xtatish</button>
+  <p class="hint">Katta tugma — gapma-gap mashq · Mikrofon — solishtirish</p>
+
+  <div class="opts">
+    <div class="seg" id="speedSeg"><button data-s="0.75" aria-pressed="false">0.75×</button><button data-s="1" aria-pressed="true">1×</button></div>
+    <div class="seg" id="textSeg"><button data-t="1" aria-pressed="true">Matn</button><button data-t="0" aria-pressed="false">Yashirin</button></div>
   </div>
-  <div class="list" id="list"></div>
-  <button class="big primary finish" id="finishBtn">✅ Tugatdim</button>
-</div>
+
+  <div>
+    <div class="lab" style="padding:0 12px 8px">Barcha gaplar</div>
+    <div class="lst" id="lst"></div>
+  </div>
+
+  <button class="btn ghost" id="doneBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span id="doneLbl">Tugatdim</span></button>
+</div></section>
 
 <script>
 (() => {
   const tg = window.Telegram && window.Telegram.WebApp;
   const VIDEOS = window.VIDEOS || [];
   const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
+  const ICO = {
+    play: '<path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/>',
+    pause: '<rect x="6.5" y="5" width="4" height="14" rx="1.3"/><rect x="13.5" y="5" width="4" height="14" rx="1.3"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
+    arrow: '<path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  };
 
   // ---------- open only inside Telegram ----------
-  if (!tg || !tg.initData) { $("loading").classList.add("hidden"); $("gate").classList.remove("hidden"); return; }
+  if (!tg || !tg.initData) { $("loading").hidden = true; $("gate").hidden = false; return; }
   tg.ready(); tg.expand();
-  try { tg.setHeaderColor("#0f1115"); tg.setBackgroundColor("#0f1115"); } catch (e) {}
+  try { tg.setHeaderColor("#060A1A"); tg.setBackgroundColor("#060A1A"); tg.setBottomBarColor && tg.setBottomBarColor("#060A1A"); } catch (e) {}
+  try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch (e) {}
+  const haptic = (t) => { try { tg.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} };
+  const notify = (t) => { try { tg.HapticFeedback.notificationOccurred(t); } catch (e) {} };
+  function toast(msg) {
+    document.querySelectorAll(".toast").forEach(t => t.remove());
+    const d = document.createElement("div"); d.className = "toast"; d.textContent = msg;
+    document.body.appendChild(d); setTimeout(() => d.remove(), 2400);
+  }
 
   // ---------- progress (Telegram cloud + this phone) ----------
   let done = {};
@@ -157,114 +271,120 @@
   }
   try {
     tg.CloudStorage && tg.CloudStorage.getItem("shadow_done", (err, val) => {
-      if (!err && val) { try { Object.assign(done, JSON.parse(val)); renderHome(); } catch (e) {} }
+      if (!err && val) { try { Object.assign(done, JSON.parse(val)); if (!$("home").hidden) renderHome(); } catch (e) {} }
     });
   } catch (e) {}
 
-  const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
-  const haptic = (t) => { try { tg.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} };
-  function toast(msg) {
-    const d = document.createElement("div"); d.className = "toast"; d.textContent = msg;
-    document.body.appendChild(d); setTimeout(() => d.remove(), 2600);
+  // ---------- screens ----------
+  const SCREENS = ["loading", "gate", "lock", "home", "player"];
+  function show(id) {
+    SCREENS.forEach(s => $(s).hidden = s !== id);
+    window.scrollTo(0, 0);
+    if (id === "player") tg.BackButton.show(); else tg.BackButton.hide();
   }
 
   // ---------- home ----------
+  let filter = "all";
+  function nextVideo() { return VIDEOS.find(v => !done[v.id]) || VIDEOS[0]; }
   function renderHome() {
     const n = VIDEOS.filter(v => done[v.id]).length;
-    $("progressText").textContent = `${VIDEOS.length} ta video · ${n} tasi tugatildi`;
-    $("progressBar").style.width = (VIDEOS.length ? (100 * n / VIDEOS.length) : 0) + "%";
-    $("grid").innerHTML = VIDEOS.map((v, i) => `
-      <button class="vcard" data-id="${v.id}">
-        <img src="posters/${v.id}.jpg" loading="lazy" alt="">
-        <span class="num">${i + 1}</span>
-        ${done[v.id] ? '<span class="done">✓</span>' : ""}
-        <div class="meta"><div class="t">${esc(v.title)}</div>
-        <div class="s">${fmt(v.dur)} · ${v.segs.length} ta gap</div></div>
-      </button>`).join("");
+    $("ringTxt").textContent = `${n}/${VIDEOS.length}`;
+    $("ringFg").style.strokeDashoffset = 169.6 * (1 - (VIDEOS.length ? n / VIDEOS.length : 0));
+    const nx = nextVideo();
+    $("contLab").textContent = n === 0 ? "Birinchi videodan boshlang" : (n === VIDEOS.length ? "Hammasi tugatildi — qaytadan" : "Davom etish");
+    $("contName").textContent = nx ? nx.title : "";
+    const list = VIDEOS.map((v, i) => ({ v, i })).filter(({ v }) =>
+      filter === "all" || (filter === "done" ? done[v.id] : !done[v.id]));
+    $("grid").innerHTML = list.length ? list.map(({ v, i }) => `
+      <button class="vc" data-id="${v.id}">
+        <img src="posters/${v.id}.jpg" alt="" loading="lazy" onload="this.classList.add('ok')">
+        <span class="n">${i + 1}</span>
+        ${done[v.id] ? `<span class="dn"><svg viewBox="0 0 24 24">${ICO.check}</svg></span>` : ""}
+        <span class="m"><span class="tt">${esc(v.title)}</span><span class="ss">${fmt(v.dur)} · ${v.segs.length} gap</span></span>
+      </button>`).join("")
+      : `<div class="empty">${filter === "done" ? "Hali tugatilgan video yo'q" : "Barcha videolar tugatildi"}</div>`;
   }
-  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  $("grid").addEventListener("click", (e) => {
-    const b = e.target.closest(".vcard"); if (b) openVideo(b.dataset.id);
+  $("grid").addEventListener("click", (e) => { const b = e.target.closest(".vc"); if (b) { haptic(); openVideo(b.dataset.id); } });
+  $("cont").onclick = () => { haptic("medium"); const v = nextVideo(); if (v) openVideo(v.id); };
+  $("filter").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    filter = b.dataset.f; haptic();
+    $("filter").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    renderHome();
   });
 
   // ---------- player state ----------
   const video = $("video");
-  let cur = null, idx = -1, speed = 1, loop = false, hideText = false;
-  let runId = 0;              // any new action cancels the previous one
-  const myRec = {};           // sentence index -> recorded audio URL (this visit only)
+  let cur = null, idx = 0, speed = 1, loop = false, showText = true, running = false;
+  let runId = 0;              // every new action cancels the previous one
+  const myRec = {};           // sentence -> your recording (this visit only)
 
-  function show(view) {
-    $("home").classList.toggle("hidden", view !== "home");
-    $("player").classList.toggle("hidden", view !== "player");
-    window.scrollTo(0, 0);
-    if (view === "player") tg.BackButton.show(); else tg.BackButton.hide();
-  }
-  tg.BackButton.onClick(() => { stopAll(); video.pause(); video.removeAttribute("src"); video.load(); show("home"); renderHome(); });
+  tg.BackButton.onClick(() => {
+    stopAll(); video.pause(); video.removeAttribute("src"); video.load();
+    show("home"); renderHome();
+  });
 
   function openVideo(id) {
-    cur = VIDEOS.find(v => v.id === id); idx = -1;
+    cur = VIDEOS.find(v => v.id === id); idx = 0;
     Object.keys(myRec).forEach(k => { URL.revokeObjectURL(myRec[k]); delete myRec[k]; });
     $("ptitle").textContent = cur.title;
     video.src = `videos/${cur.id}.mp4`; video.poster = `posters/${cur.id}.jpg`;
-    video.playbackRate = speed;
-    renderList(); setStatus(null); show("player");
+    video.playbackRate = speed; $("vbar").style.width = "0";
+    renderList(); renderFocus(); setPhase("", "Tayyor"); setMeter(0); setMain(false);
+    $("doneLbl").textContent = done[cur.id] ? "Tugatilgan" : "Tugatdim";
+    show("player");
   }
-
-  function renderList() {
-    $("list").innerHTML = cur.segs.map((s, i) => `
-      <div class="row ${i === idx ? "cur" : ""}" data-i="${i}">
-        <div class="n">${i + 1}</div>
-        <div class="tx ${hideText ? "blur" : ""}" data-act="play">${esc(s.t)}</div>
-        <div class="acts">
-          <button class="ib" data-act="play" title="Tinglash">▶</button>
-          <button class="ib" data-act="rec" title="Yozib olish">🎙</button>
-          ${myRec[i] ? '<button class="ib mine" data-act="mine" title="Mening ovozim">🗣</button>' : ""}
-        </div>
-      </div>`).join("");
-  }
-  function markCur(i) {
-    idx = i;
-    document.querySelectorAll(".row").forEach(r => r.classList.toggle("cur", +r.dataset.i === i));
-    const r = document.querySelector(`.row[data-i="${i}"]`);
-    if (r) {
-      const top = r.getBoundingClientRect().top, vh = document.querySelector(".vwrap").offsetHeight;
-      if (top < vh + 10 || top > window.innerHeight - 90) window.scrollBy({ top: top - vh - 70, behavior: "smooth" });
-    }
-  }
-
-  $("list").addEventListener("click", (e) => {
-    const a = e.target.closest("[data-act]"); if (!a) return;
-    const i = +a.closest(".row").dataset.i;
-    if (a.dataset.act === "play") playOne(i);
-    else if (a.dataset.act === "rec") recordAndCompare(i);
-    else if (a.dataset.act === "mine") playMine(i);
+  video.addEventListener("timeupdate", () => {
+    if (cur && video.duration) $("vbar").style.width = (100 * video.currentTime / video.duration) + "%";
   });
 
-  // ---------- small helpers ----------
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-  function setStatus(kind, title, sub, showStop = true) {
-    const st = $("status");
-    if (kind === null) { st.classList.add("hidden"); return; }
-    st.className = "status " + kind; $("stTitle").textContent = title; $("stSub").textContent = sub || "";
-    $("stopBtn").classList.toggle("hidden", !showStop); setRing(0);
+  function renderFocus() {
+    const s = cur.segs[idx];
+    $("sent").textContent = s.t;
+    $("sent").classList.toggle("hide", !showText);
+    $("pcount").textContent = `${idx + 1} / ${cur.segs.length}`;
+    $("cmp").hidden = !myRec[idx];
+    document.querySelectorAll(".li").forEach(r => r.classList.toggle("cur", +r.dataset.i === idx));
   }
-  function setRing(p) { $("ringFg").style.strokeDashoffset = 106.8 * (1 - Math.max(0, Math.min(1, p))); }
-  async function countdown(ms, my) {   // fills the ring over `ms`; stops early if cancelled
+  function renderList() {
+    $("lst").innerHTML = cur.segs.map((s, i) => `
+      <button class="li ${i === idx ? "cur" : ""}" data-i="${i}">
+        <span class="k">${String(i + 1).padStart(2, "0")}</span>
+        <span class="x ${showText ? "" : "hide"}">${esc(s.t)}</span>
+        ${myRec[i] ? `<span class="y"><svg viewBox="0 0 24 24">${ICO.check}</svg></span>` : "<span></span>"}
+      </button>`).join("");
+  }
+  $("lst").addEventListener("click", (e) => {
+    const r = e.target.closest(".li"); if (!r) return;
+    idx = +r.dataset.i; renderFocus(); haptic();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    playOne();
+  });
+  $("sent").onclick = () => playOne();
+
+  function setPhase(kind, label) { $("focus").className = "focus " + kind; $("phaseTxt").textContent = label; }
+  function setMeter(p) { $("meter").style.width = (Math.max(0, Math.min(1, p)) * 100) + "%"; }
+  function setMain(isRunning) { running = isRunning; $("mainIco").innerHTML = isRunning ? ICO.pause : ICO.play; }
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const segLen = (i) => (cur.segs[i].e - cur.segs[i].s) / speed;
+
+  async function countdown(ms, my) {
     const t0 = performance.now();
     while (performance.now() - t0 < ms) {
       if (my !== runId) return false;
-      setRing((performance.now() - t0) / ms); await sleep(50);
+      setMeter((performance.now() - t0) / ms); await sleep(40);
     }
-    setRing(1); return my === runId;
+    setMeter(1); return my === runId;
   }
 
-  // plays one sentence and resolves when it ends (or is cancelled)
+  // plays one sentence; resolves true when it ends, false if cancelled
   function playSegment(i, my) {
     return new Promise(async (resolve) => {
       const s = cur.segs[i];
       video.playbackRate = speed;
       if (Math.abs(video.currentTime - s.s) > 0.05) {
-        await new Promise(r => {           // wait until the jump to the sentence is done
+        await new Promise(r => {
           const t = setTimeout(r, 1500);
           video.addEventListener("seeked", () => { clearTimeout(t); r(); }, { once: true });
           video.currentTime = s.s;
@@ -274,152 +394,137 @@
       try { await video.play(); } catch (e) { resolve(false); return; }
       const tick = () => {
         if (my !== runId) { resolve(false); return; }
-        if (video.currentTime >= s.e - 0.03 || video.ended) {
-          video.pause(); setRing(1); resolve(true); return;
-        }
-        setRing((video.currentTime - s.s) / (s.e - s.s));
+        if (video.currentTime >= s.e - 0.03 || video.ended) { video.pause(); setMeter(1); resolve(true); return; }
+        setMeter((video.currentTime - s.s) / (s.e - s.s));
         requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
     });
   }
-  const segLen = (i) => (cur.segs[i].e - cur.segs[i].s) / speed;
 
   function stopAll() {
-    runId++; video.pause(); setStatus(null);
-    $("practiceBtn").textContent = "▶️ Gapma-gap";
+    runId++; video.pause(); setMain(false);
     if (recorder && recorder.state !== "inactive") { try { recorder.stop(); } catch (e) {} }
-    document.querySelectorAll(".ib.recing").forEach(b => b.classList.remove("recing"));
+    $("micBtn").classList.remove("on");
+    if (cur) { setPhase("", "Tayyor"); setMeter(0); }
   }
-  $("stopBtn").onclick = () => stopAll();
 
-  // ---------- 1) one sentence ----------
-  async function playOne(i) {
-    stopAll(); const my = runId; haptic();
-    markCur(i);
+  // one sentence (tap the sentence or a line in the list)
+  async function playOne() {
+    stopAll(); const my = runId;
     do {
-      setStatus("", `🎧 ${i + 1}-gap`, loop ? "Takrorlanmoqda…" : "Tinglang");
-      if (!await playSegment(i, my)) return;
-      if (loop && !await countdown(Math.max(1500, segLen(i) * 1000 * 1.3), my)) return;
+      setPhase("listen", loop ? "Takrorlanmoqda" : "Tinglang");
+      if (!await playSegment(idx, my)) return;
+      if (loop) {
+        setPhase("say", "Endi siz");
+        if (!await countdown(segLen(idx) * 1250 + 900, my)) return;
+      }
     } while (loop && my === runId);
-    if (my === runId) setStatus(null);
+    if (my === runId) setPhase("", "Tayyor");
   }
 
-  // ---------- 2) sentence by sentence: listen -> repeat aloud -> next ----------
-  async function practice(from) {
-    stopAll(); const my = runId; haptic("medium");
-    $("practiceBtn").textContent = "⏸ To'xtatish";
-    for (let i = from; i < cur.segs.length; i++) {
-      markCur(i);
-      setStatus("", `🎧 ${i + 1}/${cur.segs.length} — tinglang`, cur.segs[i].t.slice(0, 60));
+  // main flow: listen -> repeat aloud -> next sentence
+  async function practice() {
+    stopAll(); const my = runId; setMain(true); haptic("medium");
+    for (let i = idx; i < cur.segs.length; i++) {
+      idx = i; renderFocus();
+      setPhase("listen", "Tinglang");
       if (!await playSegment(i, my)) return;
-      setStatus("say", "🗣 Endi siz takrorlang", "Ovoz chiqarib, xuddi shunday ohangda");
-      if (!await countdown(segLen(i) * 1000 * 1.25 + 900, my)) return;
-      if (loop) { i--; continue; }   // loop mode: stay on the same sentence
+      setPhase("say", "Endi siz takrorlang");
+      haptic("soft");
+      if (!await countdown(segLen(i) * 1250 + 900, my)) return;
+      if (loop) { i--; continue; }
     }
     if (my !== runId) return;
-    stopAll(); finish(true);
+    stopAll(); idx = 0; renderFocus();
+    finish(true);
   }
-  $("practiceBtn").onclick = () => {
-    if ($("practiceBtn").textContent.startsWith("⏸")) { stopAll(); return; }
-    practice(idx >= 0 && idx < cur.segs.length - 1 ? idx : 0);
-  };
+  $("mainBtn").onclick = () => { if (running) { stopAll(); haptic(); } else practice(); };
+  $("prevBtn").onclick = () => { if (idx > 0) { idx--; renderFocus(); haptic(); playOne(); } };
+  $("nextBtn").onclick = () => { if (idx < cur.segs.length - 1) { idx++; renderFocus(); haptic(); playOne(); } };
+  $("loopBtn").onclick = () => { loop = !loop; $("loopBtn").setAttribute("aria-pressed", loop); haptic(); toast(loop ? "Bitta gap takrorlanadi" : "Takrorlash o'chirildi"); };
 
-  // ---------- whole video ----------
-  $("wholeBtn").onclick = async () => {
-    stopAll(); haptic();
-    video.playbackRate = speed; video.currentTime = 0;
-    try { await video.play(); } catch (e) {}
-  };
-
-  // ---------- 3) record yourself and compare ----------
+  // ---------- record yourself and compare ----------
   let stream = null, recorder = null;
   async function getMic() {
     if (stream && stream.active) return stream;
     stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     return stream;
   }
-  async function recordAndCompare(i) {
-    stopAll(); const my = runId; markCur(i); haptic();
+  $("micBtn").onclick = async () => {
+    if (recorder && recorder.state === "recording") { recorder.stop(); return; }   // tap again = stop
+    stopAll(); const my = runId; const i = idx; haptic("medium");
     let s;
     try { s = await getMic(); }
-    catch (e) { toast("🎙 Mikrofonga ruxsat bering (Telegram sozlamalarida) va qayta urinib ko'ring."); return; }
-    if (typeof MediaRecorder === "undefined") { toast("Bu telefonda ovoz yozish ishlamaydi 😕"); return; }
+    catch (e) { toast("Mikrofonga ruxsat bering"); return; }
+    if (typeof MediaRecorder === "undefined") { toast("Bu telefonda ovoz yozib bo'lmaydi"); return; }
 
-    // a) hear the original first
-    setStatus("", `🎧 ${i + 1}-gap — avval tinglang`, "");
+    setPhase("listen", "Avval tinglang");
     if (!await playSegment(i, my)) return;
 
-    // b) record
     const chunks = [];
     recorder = new MediaRecorder(s);
     recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data);
     const stopped = new Promise(r => recorder.onstop = r);
-    recorder.start();
-    const btn = document.querySelector(`.row[data-i="${i}"] [data-act="rec"]`);
-    btn && btn.classList.add("recing");
-    setStatus("rec", "🔴 Yozilmoqda — gapiring!", "Tugatsangiz «To'xtatish»ni bosing");
-    $("stopBtn").onclick = () => { if (recorder.state !== "inactive") recorder.stop(); };
-    const limit = Math.max(2500, segLen(i) * 1000 * 1.6 + 1200);
-    const t0 = performance.now();
-    while (recorder.state !== "inactive" && performance.now() - t0 < limit && my === runId) {
-      setRing((performance.now() - t0) / limit); await sleep(50);
+    recorder.start(); $("micBtn").classList.add("on");
+    setPhase("rec", "Yozilmoqda — gapiring");
+    const limit = Math.max(2500, segLen(i) * 1600 + 1200), t0 = performance.now();
+    while (recorder.state === "recording" && performance.now() - t0 < limit && my === runId) {
+      setMeter((performance.now() - t0) / limit); await sleep(40);
     }
     if (recorder.state !== "inactive") recorder.stop();
-    await stopped;
-    $("stopBtn").onclick = () => stopAll();
-    btn && btn.classList.remove("recing");
+    await stopped; $("micBtn").classList.remove("on");
     if (my !== runId) return;
 
-    const blob = new Blob(chunks, { type: chunks[0] ? chunks[0].type : "audio/mp4" });
     if (myRec[i]) URL.revokeObjectURL(myRec[i]);
-    myRec[i] = URL.createObjectURL(blob);
-    renderList(); markCur(i);
+    myRec[i] = URL.createObjectURL(new Blob(chunks, { type: chunks[0] ? chunks[0].type : "audio/mp4" }));
+    renderList(); renderFocus();
 
-    // c) compare: original, then you
-    setStatus("", "🎧 Asl ovoz", "Solishtiring");
+    setPhase("listen", "Asl ovoz");
     if (!await playSegment(i, my)) return;
-    await sleep(350);
-    setStatus("say", "🗣 Sizning ovozingiz", "");
+    await sleep(300);
+    setPhase("say", "Sizning ovozingiz");
     await playMine(i, my);
-    if (my === runId) setStatus(null);
-  }
-  function playMine(i, myIn) {
+    if (my === runId) setPhase("", "Solishtiring");
+  };
+  function playMine(i, my) {
     return new Promise((resolve) => {
-      if (myIn === undefined) { stopAll(); markCur(i); }
-      const my = myIn === undefined ? runId : myIn;
       const a = new Audio(myRec[i]);
-      a.onended = () => resolve(true);
-      a.onerror = () => resolve(false);
+      a.onended = () => resolve(true); a.onerror = () => resolve(false);
       a.play().catch(() => resolve(false));
       const tick = () => {
         if (my !== runId) { a.pause(); resolve(false); return; }
-        if (a.duration && isFinite(a.duration)) setRing(a.currentTime / a.duration);
+        if (a.duration && isFinite(a.duration)) setMeter(a.currentTime / a.duration);
         if (!a.ended) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
     });
   }
+  $("cmpOrig").onclick = async () => { stopAll(); const my = runId; setPhase("listen", "Asl ovoz"); if (await playSegment(idx, my)) setPhase("", "Solishtiring"); };
+  $("cmpYou").onclick = async () => { stopAll(); const my = runId; setPhase("say", "Sizning ovozingiz"); await playMine(idx, my); if (my === runId) setPhase("", "Solishtiring"); };
 
   // ---------- options ----------
-  $("speedBtn").onclick = () => {
-    speed = speed === 1 ? 0.75 : 1; video.playbackRate = speed;
-    $("speedBtn").classList.toggle("on", speed !== 1); haptic();
-  };
-  $("loopBtn").onclick = () => { loop = !loop; $("loopBtn").classList.toggle("on", loop); haptic(); };
-  $("textBtn").onclick = () => {
-    hideText = !hideText; $("textBtn").classList.toggle("on", hideText);
-    $("textBtn").textContent = hideText ? "👁 Matnni ko'rsatish" : "🙈 Matnni yashirish";
-    document.querySelectorAll(".row .tx").forEach(t => t.classList.toggle("blur", hideText)); haptic();
-  };
+  $("speedSeg").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    speed = +b.dataset.s; video.playbackRate = speed; haptic();
+    $("speedSeg").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  });
+  $("textSeg").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    showText = b.dataset.t === "1"; haptic();
+    $("textSeg").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    $("sent").classList.toggle("hide", !showText);
+    document.querySelectorAll(".li .x").forEach(x => x.classList.toggle("hide", !showText));
+  });
 
   // ---------- finished ----------
   function finish(auto) {
     if (!done[cur.id]) { done[cur.id] = Date.now(); saveDone(); }
-    try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {}
-    toast(auto ? "🎉 Barakalla! Video tugatildi." : "✅ Tugatildi deb belgilandi.");
+    $("doneLbl").textContent = "Tugatilgan";
+    notify("success");
+    toast(auto ? "Barakalla! Video tugatildi" : "Tugatildi deb belgilandi");
   }
-  $("finishBtn").onclick = () => finish(false);
+  $("doneBtn").onclick = () => finish(false);
 
   // ---------- only for people in both required channels ----------
   const ACCESS_URL = "https://admin-panel-production-65f6.up.railway.app/shadowing/access";
@@ -437,19 +542,16 @@
   }
   function showLock(channels) {
     stopAll(); video.pause();
-    $("loading").classList.add("hidden"); $("home").classList.add("hidden"); $("player").classList.add("hidden");
-    tg.BackButton.hide();
-    $("lockChannels").innerHTML = (channels || []).map(c =>
-      `<button class="ch" data-url="${esc(c.url)}">${esc(c.name)}</button>`).join("");
-    $("lock").classList.remove("hidden");
+    $("lockChannels").innerHTML = (channels || []).map(c => `
+      <button class="ch" data-url="${esc(c.url)}"><span class="av">${esc((c.name.trim()[0] || "•").toUpperCase())}</span><span>${esc(c.name)}</span><svg viewBox="0 0 24 24">${ICO.arrow}</svg></button>`).join("");
+    show("lock");
   }
   $("lockChannels").addEventListener("click", (e) => {
-    const b = e.target.closest(".ch"); if (b) tg.openTelegramLink(b.dataset.url);
+    const b = e.target.closest(".ch"); if (b) { haptic(); tg.openTelegramLink(b.dataset.url); }
   });
   async function gate() {
     const res = await checkAccess();
     if (res.ok) {
-      $("loading").classList.add("hidden"); $("lock").classList.add("hidden");
       if (!unlocked) { unlocked = true; show("home"); renderHome(); }
     } else {
       unlocked = false; showLock(res.channels);
@@ -457,12 +559,11 @@
     return res.ok;
   }
   $("recheckBtn").onclick = async () => {
-    $("recheckBtn").textContent = "⏳ Tekshirilmoqda…";
+    haptic("medium"); $("recheckLbl").textContent = "Tekshirilmoqda…";
     const ok = await gate();
-    $("recheckBtn").textContent = "✅ A'zo bo'ldim";
-    if (!ok) toast("Hali hamma kanallarga a'zo bo'lmadingiz 🙂");
+    $("recheckLbl").textContent = "A'zo bo'ldim";
+    if (!ok) { notify("error"); toast("Hali hamma kanallarga a'zo emassiz"); } else notify("success");
   };
-  // check again whenever they come back to the app (e.g. after joining or leaving a channel)
   document.addEventListener("visibilitychange", () => { if (!document.hidden) gate(); });
   gate();
 })();
