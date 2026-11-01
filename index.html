@@ -111,10 +111,14 @@ svg{display:block}
 .meter{height:4px;border-radius:2px;background:rgba(195,206,255,.08);overflow:hidden}
 .meter i{display:block;height:100%;width:0;border-radius:2px;background:var(--b1)}
 .focus.say .meter i{background:var(--good)} .focus.rec .meter i{background:var(--bad)}
-.cmp{display:flex;justify-content:center;gap:8px}
-.chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:17px;font-size:13px;font-weight:500;background:rgba(195,206,255,.07);box-shadow:inset 0 0 0 1px var(--line);color:var(--tint)}
-.chip svg{width:12px;height:12px}
+.cmp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:62px;padding:0 4px;border-radius:16px;font-size:11.5px;font-weight:500;line-height:1.15;white-space:nowrap;
+  background:rgba(195,206,255,.07);box-shadow:inset 0 0 0 1px var(--line);color:var(--tint);transition:transform .15s var(--ease)}
+.chip:active{transform:scale(.96)}
+.chip svg{width:13px;height:13px}
 .chip.you{background:rgba(52,211,153,.12);box-shadow:inset 0 0 0 1px rgba(52,211,153,.3);color:#9FEBCB}
+.chip.re{background:rgba(255,90,114,.10);box-shadow:inset 0 0 0 1px rgba(255,90,114,.28);color:#FFB3BF}
+.chip.re svg{width:12px;height:12px;color:var(--bad)}
 
 .ctrl{display:flex;align-items:center;justify-content:center;gap:16px}
 .cb{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:var(--tint);background:rgba(195,206,255,.05);box-shadow:inset 0 0 0 1px var(--line);transition:transform .15s var(--ease),background .2s,color .2s}
@@ -195,8 +199,9 @@ svg{display:block}
     <div class="sent" id="sent"></div>
     <div class="meter"><i id="meter"></i></div>
     <div class="cmp" id="cmp" hidden>
-      <button class="chip" id="cmpOrig"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg>Asl ovoz</button>
-      <button class="chip you" id="cmpYou"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg>Mening ovozim</button>
+      <button class="chip" id="cmpOrig"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg><span>Asl ovoz</span></button>
+      <button class="chip you" id="cmpYou"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg><span>Mening ovozim</span></button>
+      <button class="chip re" id="cmpRe"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg><span>Qayta yozish</span></button>
     </div>
   </div>
 
@@ -425,13 +430,17 @@ svg{display:block}
   let stream = null, recorder = null;
   async function yourTurn(i, mic, my) {
     const ms = segLen(i) * 1250 + 900;
-    if (!mic) { setPhase("say", "Endi siz takrorlang"); return countdown(ms, my); }
+    // already recorded: just pause for them to repeat (only "Qayta yozish" records again)
+    if (!mic || myRec[i]) { setPhase("say", "Endi siz takrorlang"); return countdown(ms, my); }
+    return recordInto(i, mic, ms, my, "say recording", "Endi siz takrorlang");
+  }
+  async function recordInto(i, mic, ms, my, kind, label) {
     const chunks = [];
     recorder = new MediaRecorder(mic);
     recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data);
     const stopped = new Promise(r => recorder.onstop = r);
     recorder.start();
-    setPhase("say recording", "Endi siz takrorlang");
+    setPhase(kind, label);
     const ok = await countdown(ms, my);
     if (recorder.state !== "inactive") recorder.stop();
     await stopped;
@@ -464,6 +473,15 @@ svg{display:block}
     });
   }
   $("cmpOrig").onclick = async () => { stopAll(); const my = runId; setPhase("listen", "Asl ovoz"); if (await playSegment(idx, my)) setPhase("", "Solishtiring"); };
+  $("cmpRe").onclick = async () => {
+    stopAll(); const my = runId; haptic("medium");
+    let mic;
+    try { mic = await getMic(); } catch (e) { toast("Mikrofonga ruxsat bering"); return; }
+    if (my !== runId) return;
+    if (await recordInto(idx, mic, segLen(idx) * 1250 + 900, my, "rec", "Yozilmoqda — gapiring")) {
+      notify("success"); setPhase("", "Yangi yozuv saqlandi");
+    }
+  };
   $("cmpYou").onclick = async () => { stopAll(); const my = runId; setPhase("say", "Sizning ovozingiz"); await playMine(idx, my); if (my === runId) setPhase("", "Solishtiring"); };
 
   // ---------- options ----------
