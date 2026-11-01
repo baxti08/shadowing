@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Shadowing</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="data.js?v=1"></script>
+<style>
+  :root {
+    --bg: #0f1115; --card: #181b22; --card2: #20242d; --text: #eef1f6; --muted: #8d95a5;
+    --accent: #5b8cff; --accent2: #7c5bff; --green: #34c47c; --red: #ff5b6b; --line: #2a2f3a;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  button { font: inherit; color: inherit; border: 0; cursor: pointer; background: none; }
+  .hidden { display: none !important; }
+
+  /* ---------- home ---------- */
+  #home { padding: 16px 16px 32px; }
+  .hero { padding: 6px 2px 14px; }
+  .hero h1 { margin: 0; font-size: 24px; letter-spacing: -.3px; }
+  .hero p { margin: 4px 0 0; color: var(--muted); }
+  .bar { height: 6px; background: var(--card2); border-radius: 6px; overflow: hidden; margin-top: 12px; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width .4s; }
+  .how { background: var(--card); border-radius: var(--radius); padding: 12px 14px; margin: 4px 0 16px; }
+  .how b { display: block; margin-bottom: 6px; }
+  .how ol { margin: 0; padding-left: 20px; color: var(--muted); }
+  .how li { margin: 3px 0; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .vcard { position: relative; background: var(--card); border-radius: var(--radius); overflow: hidden; text-align: left; padding: 0; }
+  .vcard img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; background: var(--card2); }
+  .vcard .meta { padding: 8px 10px 10px; }
+  .vcard .t { font-weight: 600; font-size: 13.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .vcard .s { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .vcard .num { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,.6); border-radius: 8px; padding: 2px 7px; font-size: 12px; font-weight: 600; }
+  .vcard .done { position: absolute; top: 8px; right: 8px; background: var(--green); border-radius: 50%; width: 24px; height: 24px; display: grid; place-items: center; font-size: 13px; }
+
+  /* ---------- player ---------- */
+  #player { padding-bottom: 120px; }
+  .vwrap { position: sticky; top: 0; z-index: 5; background: #000; }
+  video { display: block; width: 100%; max-height: 46vh; background: #000; }
+  .ptitle { padding: 12px 16px 2px; font-weight: 700; font-size: 17px; }
+  .tools { display: flex; gap: 8px; padding: 10px 16px; flex-wrap: wrap; }
+  .chip { background: var(--card2); border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .chip.on { background: rgba(91,140,255,.18); color: var(--accent); }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 16px 10px; }
+  .big { border-radius: 14px; padding: 12px; font-weight: 700; font-size: 14.5px; text-align: center; }
+  .big.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+  .big.ghost { background: var(--card2); }
+  .status { margin: 0 16px 10px; background: var(--card); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+  .status .ring { width: 38px; height: 38px; flex: none; }
+  .status .ring circle { fill: none; stroke-width: 4; }
+  .status .ring .bg { stroke: var(--card2); }
+  .status .ring .fg { stroke: var(--accent); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+  .status.rec .ring .fg { stroke: var(--red); }
+  .status.say .ring .fg { stroke: var(--green); }
+  .status .st { font-weight: 700; }
+  .status .ss { color: var(--muted); font-size: 13px; }
+  .status button { margin-left: auto; background: var(--card2); border-radius: 10px; padding: 7px 11px; font-size: 13px; font-weight: 600; }
+
+  .list { padding: 0 12px; }
+  .row { display: flex; gap: 10px; align-items: flex-start; background: var(--card); border-radius: 14px; padding: 10px 10px 10px 12px; margin-bottom: 8px; border: 1.5px solid transparent; }
+  .row.cur { border-color: var(--accent); background: #1b2030; }
+  .row .n { color: var(--muted); font-size: 12px; font-weight: 700; min-width: 18px; padding-top: 2px; }
+  .row .tx { flex: 1; font-size: 15px; line-height: 1.45; padding-top: 1px; }
+  .row .tx.blur { filter: blur(6px); user-select: none; }
+  .row .acts { display: flex; gap: 6px; flex: none; }
+  .ib { width: 36px; height: 36px; border-radius: 10px; background: var(--card2); display: grid; place-items: center; font-size: 16px; }
+  .ib.mine { background: rgba(52,196,124,.16); }
+  .ib.recing { background: var(--red); }
+  .finish { margin: 14px 16px 0; width: calc(100% - 32px); }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2b3140; padding: 10px 16px; border-radius: 12px; font-size: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.4); z-index: 50; max-width: 90%; text-align: center; }
+  .gate { padding: 40px 24px; text-align: center; color: var(--muted); }
+  .gate b { display: block; color: var(--text); font-size: 18px; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate hidden"><b>🎙️ Shadowing</b>Bu sahifa faqat bot orqali ochiladi.</div>
+
+<div id="home" class="hidden">
+  <div class="hero">
+    <h1>🎙️ Shadowing</h1>
+    <p id="progressText"></p>
+    <div class="bar"><i id="progressBar"></i></div>
+  </div>
+  <div class="how">
+    <b>Qanday mashq qilinadi?</b>
+    <ol>
+      <li>Videoni tanlang va <b style="display:inline">«Gapma-gap»</b> tugmasini bosing.</li>
+      <li>Har bir gapdan keyin video to'xtaydi — xuddi o'shanday ovoz chiqarib takrorlang.</li>
+      <li>🎙 tugmasi: ovozingizni yozib oling va asl ovoz bilan solishtiring.</li>
+    </ol>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div id="player" class="hidden">
+  <div class="vwrap"><video id="video" playsinline webkit-playsinline preload="auto"></video></div>
+  <div class="ptitle" id="ptitle"></div>
+  <div class="tools">
+    <button class="chip" id="speedBtn">🐢 0.75x</button>
+    <button class="chip" id="loopBtn">🔁 Bitta gapni takrorlash</button>
+    <button class="chip" id="textBtn">🙈 Matnni yashirish</button>
+  </div>
+  <div class="modes">
+    <button class="big primary" id="practiceBtn">▶️ Gapma-gap</button>
+    <button class="big ghost" id="wholeBtn">🎬 To'liq ko'rish</button>
+  </div>
+  <div class="status hidden" id="status">
+    <svg class="ring" viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="17"/><circle class="fg" id="ringFg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/></svg>
+    <div><div class="st" id="stTitle"></div><div class="ss" id="stSub"></div></div>
+    <button id="stopBtn">⏹ To'xtatish</button>
+  </div>
+  <div class="list" id="list"></div>
+  <button class="big primary finish" id="finishBtn">✅ Tugatdim</button>
+</div>
+
+<script>
+(() => {
+  const tg = window.Telegram && window.Telegram.WebApp;
+  const VIDEOS = window.VIDEOS || [];
+  const $ = (id) => document.getElementById(id);
+
+  // ---------- open only inside Telegram ----------
+  if (!tg || !tg.initData) { $("gate").classList.remove("hidden"); return; }
+  tg.ready(); tg.expand();
+  try { tg.setHeaderColor("#0f1115"); tg.setBackgroundColor("#0f1115"); } catch (e) {}
+
+  // ---------- progress (Telegram cloud + this phone) ----------
+  let done = {};
+  try { done = JSON.parse(localStorage.getItem("shadow_done") || "{}"); } catch (e) {}
+  function saveDone() {
+    const s = JSON.stringify(done);
+    try { localStorage.setItem("shadow_done", s); } catch (e) {}
+    try { tg.CloudStorage && tg.CloudStorage.setItem("shadow_done", s); } catch (e) {}
+  }
+  try {
+    tg.CloudStorage && tg.CloudStorage.getItem("shadow_done", (err, val) => {
+      if (!err && val) { try { Object.assign(done, JSON.parse(val)); renderHome(); } catch (e) {} }
+    });
+  } catch (e) {}
+
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
+  const haptic = (t) => { try { tg.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} };
+  function toast(msg) {
+    const d = document.createElement("div"); d.className = "toast"; d.textContent = msg;
+    document.body.appendChild(d); setTimeout(() => d.remove(), 2600);
+  }
+
+  // ---------- home ----------
+  function renderHome() {
+    const n = VIDEOS.filter(v => done[v.id]).length;
+    $("progressText").textContent = `${VIDEOS.length} ta video · ${n} tasi tugatildi`;
+    $("progressBar").style.width = (VIDEOS.length ? (100 * n / VIDEOS.length) : 0) + "%";
+    $("grid").innerHTML = VIDEOS.map((v, i) => `
+      <button class="vcard" data-id="${v.id}">
+        <img src="posters/${v.id}.jpg" loading="lazy" alt="">
+        <span class="num">${i + 1}</span>
+        ${done[v.id] ? '<span class="done">✓</span>' : ""}
+        <div class="meta"><div class="t">${esc(v.title)}</div>
+        <div class="s">${fmt(v.dur)} · ${v.segs.length} ta gap</div></div>
+      </button>`).join("");
+  }
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  $("grid").addEventListener("click", (e) => {
+    const b = e.target.closest(".vcard"); if (b) openVideo(b.dataset.id);
+  });
+
+  // ---------- player state ----------
+  const video = $("video");
+  let cur = null, idx = -1, speed = 1, loop = false, hideText = false;
+  let runId = 0;              // any new action cancels the previous one
+  const myRec = {};           // sentence index -> recorded audio URL (this visit only)
+
+  function show(view) {
+    $("home").classList.toggle("hidden", view !== "home");
+    $("player").classList.toggle("hidden", view !== "player");
+    window.scrollTo(0, 0);
+    if (view === "player") tg.BackButton.show(); else tg.BackButton.hide();
+  }
+  tg.BackButton.onClick(() => { stopAll(); video.pause(); video.removeAttribute("src"); video.load(); show("home"); renderHome(); });
+
+  function openVideo(id) {
+    cur = VIDEOS.find(v => v.id === id); idx = -1;
+    Object.keys(myRec).forEach(k => { URL.revokeObjectURL(myRec[k]); delete myRec[k]; });
+    $("ptitle").textContent = cur.title;
+    video.src = `videos/${cur.id}.mp4`; video.poster = `posters/${cur.id}.jpg`;
+    video.playbackRate = speed;
+    renderList(); setStatus(null); show("player");
+  }
+
+  function renderList() {
+    $("list").innerHTML = cur.segs.map((s, i) => `
+      <div class="row ${i === idx ? "cur" : ""}" data-i="${i}">
+        <div class="n">${i + 1}</div>
+        <div class="tx ${hideText ? "blur" : ""}" data-act="play">${esc(s.t)}</div>
+        <div class="acts">
+          <button class="ib" data-act="play" title="Tinglash">▶</button>
+          <button class="ib" data-act="rec" title="Yozib olish">🎙</button>
+          ${myRec[i] ? '<button class="ib mine" data-act="mine" title="Mening ovozim">🗣</button>' : ""}
+        </div>
+      </div>`).join("");
+  }
+  function markCur(i) {
+    idx = i;
+    document.querySelectorAll(".row").forEach(r => r.classList.toggle("cur", +r.dataset.i === i));
+    const r = document.querySelector(`.row[data-i="${i}"]`);
+    if (r) {
+      const top = r.getBoundingClientRect().top, vh = document.querySelector(".vwrap").offsetHeight;
+      if (top < vh + 10 || top > window.innerHeight - 90) window.scrollBy({ top: top - vh - 70, behavior: "smooth" });
+    }
+  }
+
+  $("list").addEventListener("click", (e) => {
+    const a = e.target.closest("[data-act]"); if (!a) return;
+    const i = +a.closest(".row").dataset.i;
+    if (a.dataset.act === "play") playOne(i);
+    else if (a.dataset.act === "rec") recordAndCompare(i);
+    else if (a.dataset.act === "mine") playMine(i);
+  });
+
+  // ---------- small helpers ----------
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  function setStatus(kind, title, sub, showStop = true) {
+    const st = $("status");
+    if (kind === null) { st.classList.add("hidden"); return; }
+    st.className = "status " + kind; $("stTitle").textContent = title; $("stSub").textContent = sub || "";
+    $("stopBtn").classList.toggle("hidden", !showStop); setRing(0);
+  }
+  function setRing(p) { $("ringFg").style.strokeDashoffset = 106.8 * (1 - Math.max(0, Math.min(1, p))); }
+  async function countdown(ms, my) {   // fills the ring over `ms`; stops early if cancelled
+    const t0 = performance.now();
+    while (performance.now() - t0 < ms) {
+      if (my !== runId) return false;
+      setRing((performance.now() - t0) / ms); await sleep(50);
+    }
+    setRing(1); return my === runId;
+  }
+
+  // plays one sentence and resolves when it ends (or is cancelled)
+  function playSegment(i, my) {
+    return new Promise(async (resolve) => {
+      const s = cur.segs[i];
+      video.playbackRate = speed;
+      if (Math.abs(video.currentTime - s.s) > 0.05) {
+        await new Promise(r => {           // wait until the jump to the sentence is done
+          const t = setTimeout(r, 1500);
+          video.addEventListener("seeked", () => { clearTimeout(t); r(); }, { once: true });
+          video.currentTime = s.s;
+        });
+      }
+      if (my !== runId) { resolve(false); return; }
+      try { await video.play(); } catch (e) { resolve(false); return; }
+      const tick = () => {
+        if (my !== runId) { resolve(false); return; }
+        if (video.currentTime >= s.e - 0.03 || video.ended) {
+          video.pause(); setRing(1); resolve(true); return;
+        }
+        setRing((video.currentTime - s.s) / (s.e - s.s));
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  const segLen = (i) => (cur.segs[i].e - cur.segs[i].s) / speed;
+
+  function stopAll() {
+    runId++; video.pause(); setStatus(null);
+    $("practiceBtn").textContent = "▶️ Gapma-gap";
+    if (recorder && recorder.state !== "inactive") { try { recorder.stop(); } catch (e) {} }
+    document.querySelectorAll(".ib.recing").forEach(b => b.classList.remove("recing"));
+  }
+  $("stopBtn").onclick = () => stopAll();
+
+  // ---------- 1) one sentence ----------
+  async function playOne(i) {
+    stopAll(); const my = runId; haptic();
+    markCur(i);
+    do {
+      setStatus("", `🎧 ${i + 1}-gap`, loop ? "Takrorlanmoqda…" : "Tinglang");
+      if (!await playSegment(i, my)) return;
+      if (loop && !await countdown(Math.max(1500, segLen(i) * 1000 * 1.3), my)) return;
+    } while (loop && my === runId);
+    if (my === runId) setStatus(null);
+  }
+
+  // ---------- 2) sentence by sentence: listen -> repeat aloud -> next ----------
+  async function practice(from) {
+    stopAll(); const my = runId; haptic("medium");
+    $("practiceBtn").textContent = "⏸ To'xtatish";
+    for (let i = from; i < cur.segs.length; i++) {
+      markCur(i);
+      setStatus("", `🎧 ${i + 1}/${cur.segs.length} — tinglang`, cur.segs[i].t.slice(0, 60));
+      if (!await playSegment(i, my)) return;
+      setStatus("say", "🗣 Endi siz takrorlang", "Ovoz chiqarib, xuddi shunday ohangda");
+      if (!await countdown(segLen(i) * 1000 * 1.25 + 900, my)) return;
+      if (loop) { i--; continue; }   // loop mode: stay on the same sentence
+    }
+    if (my !== runId) return;
+    stopAll(); finish(true);
+  }
+  $("practiceBtn").onclick = () => {
+    if ($("practiceBtn").textContent.startsWith("⏸")) { stopAll(); return; }
+    practice(idx >= 0 && idx < cur.segs.length - 1 ? idx : 0);
+  };
+
+  // ---------- whole video ----------
+  $("wholeBtn").onclick = async () => {
+    stopAll(); haptic();
+    video.playbackRate = speed; video.currentTime = 0;
+    try { await video.play(); } catch (e) {}
+  };
+
+  // ---------- 3) record yourself and compare ----------
+  let stream = null, recorder = null;
+  async function getMic() {
+    if (stream && stream.active) return stream;
+    stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    return stream;
+  }
+  async function recordAndCompare(i) {
+    stopAll(); const my = runId; markCur(i); haptic();
+    let s;
+    try { s = await getMic(); }
+    catch (e) { toast("🎙 Mikrofonga ruxsat bering (Telegram sozlamalarida) va qayta urinib ko'ring."); return; }
+    if (typeof MediaRecorder === "undefined") { toast("Bu telefonda ovoz yozish ishlamaydi 😕"); return; }
+
+    // a) hear the original first
+    setStatus("", `🎧 ${i + 1}-gap — avval tinglang`, "");
+    if (!await playSegment(i, my)) return;
+
+    // b) record
+    const chunks = [];
+    recorder = new MediaRecorder(s);
+    recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data);
+    const stopped = new Promise(r => recorder.onstop = r);
+    recorder.start();
+    const btn = document.querySelector(`.row[data-i="${i}"] [data-act="rec"]`);
+    btn && btn.classList.add("recing");
+    setStatus("rec", "🔴 Yozilmoqda — gapiring!", "Tugatsangiz «To'xtatish»ni bosing");
+    $("stopBtn").onclick = () => { if (recorder.state !== "inactive") recorder.stop(); };
+    const limit = Math.max(2500, segLen(i) * 1000 * 1.6 + 1200);
+    const t0 = performance.now();
+    while (recorder.state !== "inactive" && performance.now() - t0 < limit && my === runId) {
+      setRing((performance.now() - t0) / limit); await sleep(50);
+    }
+    if (recorder.state !== "inactive") recorder.stop();
+    await stopped;
+    $("stopBtn").onclick = () => stopAll();
+    btn && btn.classList.remove("recing");
+    if (my !== runId) return;
+
+    const blob = new Blob(chunks, { type: chunks[0] ? chunks[0].type : "audio/mp4" });
+    if (myRec[i]) URL.revokeObjectURL(myRec[i]);
+    myRec[i] = URL.createObjectURL(blob);
+    renderList(); markCur(i);
+
+    // c) compare: original, then you
+    setStatus("", "🎧 Asl ovoz", "Solishtiring");
+    if (!await playSegment(i, my)) return;
+    await sleep(350);
+    setStatus("say", "🗣 Sizning ovozingiz", "");
+    await playMine(i, my);
+    if (my === runId) setStatus(null);
+  }
+  function playMine(i, myIn) {
+    return new Promise((resolve) => {
+      if (myIn === undefined) { stopAll(); markCur(i); }
+      const my = myIn === undefined ? runId : myIn;
+      const a = new Audio(myRec[i]);
+      a.onended = () => resolve(true);
+      a.onerror = () => resolve(false);
+      a.play().catch(() => resolve(false));
+      const tick = () => {
+        if (my !== runId) { a.pause(); resolve(false); return; }
+        if (a.duration && isFinite(a.duration)) setRing(a.currentTime / a.duration);
+        if (!a.ended) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // ---------- options ----------
+  $("speedBtn").onclick = () => {
+    speed = speed === 1 ? 0.75 : 1; video.playbackRate = speed;
+    $("speedBtn").classList.toggle("on", speed !== 1); haptic();
+  };
+  $("loopBtn").onclick = () => { loop = !loop; $("loopBtn").classList.toggle("on", loop); haptic(); };
+  $("textBtn").onclick = () => {
+    hideText = !hideText; $("textBtn").classList.toggle("on", hideText);
+    $("textBtn").textContent = hideText ? "👁 Matnni ko'rsatish" : "🙈 Matnni yashirish";
+    document.querySelectorAll(".row .tx").forEach(t => t.classList.toggle("blur", hideText)); haptic();
+  };
+
+  // ---------- finished ----------
+  function finish(auto) {
+    if (!done[cur.id]) { done[cur.id] = Date.now(); saveDone(); }
+    try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {}
+    toast(auto ? "🎉 Barakalla! Video tugatildi." : "✅ Tugatildi deb belgilandi.");
+  }
+  $("finishBtn").onclick = () => finish(false);
+
+  show("home"); renderHome();
+})();
+</script>
+</body>
+</html>
