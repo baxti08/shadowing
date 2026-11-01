@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Shadowing</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="data.js?v=1"></script>
+<script src="data.js?v=2"></script>
 <style>
   :root {
     --bg: #0f1115; --card: #181b22; --card2: #20242d; --text: #eef1f6; --muted: #8d95a5;
@@ -75,11 +75,28 @@
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2b3140; padding: 10px 16px; border-radius: 12px; font-size: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.4); z-index: 50; max-width: 90%; text-align: center; }
   .gate { padding: 40px 24px; text-align: center; color: var(--muted); }
   .gate b { display: block; color: var(--text); font-size: 18px; margin-bottom: 6px; }
+  #lock { padding: 48px 20px; text-align: center; }
+  #lock .ic { font-size: 54px; }
+  #lock h2 { margin: 10px 0 6px; font-size: 21px; }
+  #lock p { color: var(--muted); margin: 0 0 20px; }
+  #lock .ch { display: block; width: 100%; background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 10px; font-weight: 700; }
+  #lock .again { margin-top: 8px; width: 100%; }
+  #loading { padding: 80px 20px; text-align: center; color: var(--muted); }
 </style>
 </head>
 <body>
 
 <div id="gate" class="gate hidden"><b>🎙️ Shadowing</b>Bu sahifa faqat bot orqali ochiladi.</div>
+
+<div id="loading">⏳ Tekshirilmoqda…</div>
+
+<div id="lock" class="hidden">
+  <div class="ic">🔒</div>
+  <h2>Shadowing yopiq</h2>
+  <p>Ochish uchun ustozlar kanaliga a'zo bo'ling👇</p>
+  <div id="lockChannels"></div>
+  <button class="big primary again" id="recheckBtn">✅ A'zo bo'ldim</button>
+</div>
 
 <div id="home" class="hidden">
   <div class="hero">
@@ -126,7 +143,7 @@
   const $ = (id) => document.getElementById(id);
 
   // ---------- open only inside Telegram ----------
-  if (!tg || !tg.initData) { $("gate").classList.remove("hidden"); return; }
+  if (!tg || !tg.initData) { $("loading").classList.add("hidden"); $("gate").classList.remove("hidden"); return; }
   tg.ready(); tg.expand();
   try { tg.setHeaderColor("#0f1115"); tg.setBackgroundColor("#0f1115"); } catch (e) {}
 
@@ -404,7 +421,50 @@
   }
   $("finishBtn").onclick = () => finish(false);
 
-  show("home"); renderHome();
+  // ---------- only for people in both required channels ----------
+  const ACCESS_URL = "https://admin-panel-production-65f6.up.railway.app/shadowing/access";
+  let unlocked = false;
+  async function checkAccess() {
+    try {
+      const r = await fetch(ACCESS_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initData: tg.initData }),
+      });
+      return await r.json();
+    } catch (e) {
+      return { ok: true };   // our server can't be reached: don't punish members
+    }
+  }
+  function showLock(channels) {
+    stopAll(); video.pause();
+    $("loading").classList.add("hidden"); $("home").classList.add("hidden"); $("player").classList.add("hidden");
+    tg.BackButton.hide();
+    $("lockChannels").innerHTML = (channels || []).map(c =>
+      `<button class="ch" data-url="${esc(c.url)}">${esc(c.name)}</button>`).join("");
+    $("lock").classList.remove("hidden");
+  }
+  $("lockChannels").addEventListener("click", (e) => {
+    const b = e.target.closest(".ch"); if (b) tg.openTelegramLink(b.dataset.url);
+  });
+  async function gate() {
+    const res = await checkAccess();
+    if (res.ok) {
+      $("loading").classList.add("hidden"); $("lock").classList.add("hidden");
+      if (!unlocked) { unlocked = true; show("home"); renderHome(); }
+    } else {
+      unlocked = false; showLock(res.channels);
+    }
+    return res.ok;
+  }
+  $("recheckBtn").onclick = async () => {
+    $("recheckBtn").textContent = "⏳ Tekshirilmoqda…";
+    const ok = await gate();
+    $("recheckBtn").textContent = "✅ A'zo bo'ldim";
+    if (!ok) toast("Hali hamma kanallarga a'zo bo'lmadingiz 🙂");
+  };
+  // check again whenever they come back to the app (e.g. after joining or leaving a channel)
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) gate(); });
+  gate();
 })();
 </script>
 </body>
