@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="data.js?v=3"></script>
+<script src="data.js?v=4"></script>
 <style>
 /* Shadowing — same world as Word FC: night blue, one brand gradient, Poppins only.
    Colour carries meaning: blue = listen / action, green = your turn, red = recording. */
@@ -282,7 +282,6 @@ svg{display:block}
     $("grid").innerHTML = list.length ? list.map(({ v, i }) => `
       <button class="vc" data-id="${v.id}">
         <img src="posters/${v.id}.jpg" alt="" loading="lazy" onload="this.classList.add('ok')">
-        <span class="n">${i + 1}</span>
         ${done[v.id] ? `<span class="dn"><svg viewBox="0 0 24 24">${ICO.check}</svg></span>` : ""}
         <span class="m"><span class="tt">${esc(v.title)}</span><span class="ss">${fmt(v.dur)} · ${v.segs.length} gap</span></span>
       </button>`).join("")
